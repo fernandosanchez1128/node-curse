@@ -1,6 +1,6 @@
 const express = require('express')
 
-let {verificaToken,verificaAdminRole} = require('../middlewares/autenticacion')
+let { verificaToken, verificaAdminRole } = require('../middlewares/autenticacion')
 
 
 let app = express();
@@ -12,63 +12,63 @@ let Categoria = require('../models/categoria')
 /**
  * Consulta de todas las categorias
  */
-app.get('/categoria',(req,res) =>{
+app.get('/categoria', (req, res) => {
     Categoria.find()
-    .populate('usuario','nombre email')
-    .sort('descripcion')
-    .exec((err,categorias) =>{
-        if (err)
-            return res.status(400).json({
-            ok: false,
-            err
+        .populate('usuario', 'nombre email')
+        .sort('descripcion')
+        .exec((err, categorias) => {
+            if (err)
+                return res.status(400).json({
+                    ok: false,
+                    err
+                })
+            return res.json({
+                ok: true,
+                categorias
+            })
         })
-        return res.json({
-            ok : true,
-            categorias
-        })
-    })
 })
 
 /**
  * Consulta categoria por id
  */
-app.get('/categoria/:id',verificaToken, (req,res) =>{
-    let id  = req.params.id;
+app.get('/categoria/:id', verificaToken, (req, res) => {
+    let id = req.params.id;
     Categoria.findById(id)
-    .populate('usuario','nombre email')
-    .exec( (err,categoria) =>{
-        if (err)
-            return res.status(400).json({
-            ok: false,
-            err
+        .populate('usuario', 'nombre email')
+        .exec((err, categoria) => {
+            if (err)
+                return res.status(400).json({
+                    ok: false,
+                    err
+                })
+            return res.json({
+                ok: true,
+                categoria
+            })
         })
-        return res.json({
-            ok : true,
-            categoria
-        })
-    })
 })
 
 /**
  * Creacion de una categoria
  */
-app.post('/categoria',[verificaToken,verificaAdminRole], (req,res) =>{
+app.post('/categoria', [verificaToken, verificaAdminRole], (req, res) => {
     let body = req.body
     let id_user = req.usuario._id
     let categoria = new Categoria({
-        descripcion : body.descripcion,
-        usuario     : id_user
+        descripcion: body.descripcion,
+        usuario: id_user
     })
 
-    categoria.save((err,categoriaDB) => {
+    categoria.save((err, categoriaDB) => {
         if (err)
             return res.status(500).json({
-            ok: false,
-            err
-        })
-        return res.json ({
-            ok : true,
-            categoria : categoriaDB
+                ok: false,
+                err
+            })
+        return res.json({
+            ok: true,
+            categoria: categoriaDB
         })
     })
 })
@@ -76,17 +76,17 @@ app.post('/categoria',[verificaToken,verificaAdminRole], (req,res) =>{
 /**
  * Actualizacion de una categoria
  */
-app.put('/categoria/:id',verificaToken,(req,res) =>{
-    let id  = req.params.id;
-    let body = {descripcion : req.body.descripcion}
-    Categoria.findByIdAndUpdate(id,body,{new : true, runValidators : true},(err,categoria) =>{
+app.put('/categoria/:id', verificaToken, (req, res) => {
+    let id = req.params.id;
+    let body = { descripcion: req.body.descripcion }
+    Categoria.findByIdAndUpdate(id, body, { new: true, runValidators: true }, (err, categoria) => {
         if (err)
             return res.status(400).json({
-            ok: false,
-            err
-        })
+                ok: false,
+                err
+            })
         return res.json({
-            ok : true,
+            ok: true,
             categoria
         })
     })
@@ -95,16 +95,16 @@ app.put('/categoria/:id',verificaToken,(req,res) =>{
 /**
  * Eliminacion de una categoria
  */
-app.delete('/categoria/:id',[verificaToken,verificaAdminRole],(req,res) =>{
-    let id  = req.params.id;
-    Categoria.findByIdAndDelete(id,(err,categoria) =>{
+app.delete('/categoria/:id', [verificaToken, verificaAdminRole], (req, res) => {
+    let id = req.params.id;
+    Categoria.findByIdAndDelete(id, (err, categoria) => {
         if (err)
             return res.status(400).json({
-            ok: false,
-            err
-        })
+                ok: false,
+                err
+            })
         return res.json({
-            ok : true,
+            ok: true,
             categoria
         })
     })
